@@ -1,5 +1,8 @@
 # Meshory (self-hosted)
 
+Source: [github.com/aon082910/meshory-selfhosted](https://github.com/aon082910/meshory-selfhosted) ·
+Image: [hub.docker.com/r/allornothing/meshory-selfhosted](https://hub.docker.com/r/allornothing/meshory-selfhosted)
+
 An open, self-hosted clone of [meshory.com](https://meshory.com)'s feature set for Unraid:
 STL/3MF/OBJ/STEP/FBX library management, thumbnails, duplicate detection, AI
 auto-tagging + semantic search (local Ollama **or** an external API — your
@@ -31,10 +34,11 @@ Then open http://localhost:8420. Put some STL/3MF files in `./data`, click
    ```
 
 3. **Add the Meshory template**: Docker tab → Add Container → toggle
-   "Template" mode off → in the **Template** field near the top paste the raw
-   URL to `unraid/meshory.xml` once it's hosted (e.g. on GitHub raw), or copy
-   the file to `/boot/config/plugins/dockerMan/templates-user/` on the Unraid
-   flash drive and it'll appear under "User templates" automatically.
+   "Template" mode off → in the **Template** field near the top paste:
+   `https://raw.githubusercontent.com/aon082910/meshory-selfhosted/master/unraid/meshory.xml`
+   — Unraid fetches it and pre-fills everything below. (Alternative: copy
+   `unraid/meshory.xml` to `/boot/config/plugins/dockerMan/templates-user/` on the
+   flash drive and it'll appear under "User templates" instead.)
 
 4. Set **Library Path** to the Unraid share holding your model files (e.g.
    `/mnt/user/models/`) and **App Config/DB** to an appdata folder. Apply.

@@ -24,8 +24,8 @@ MakerWorld, and optional webhook notifications (ntfy/Discord/Slack).
   </Overview>
   <Category>Tools: Productivity:</Category>
   <WebUI>http://[IP]:[PORT:8420]/</WebUI>
-  <TemplateURL/>
-  <Icon>https://raw.githubusercontent.com/allornothing/meshory-selfhosted/main/icon.png</Icon>
+  <TemplateURL>https://raw.githubusercontent.com/aon082910/meshory-selfhosted/master/unraid/meshory.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/aon082910/meshory-selfhosted/master/unraid/icon.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>
