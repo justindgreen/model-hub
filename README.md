@@ -1,5 +1,7 @@
 # Model Hub (self-hosted)
 
+[![CI](https://github.com/aon082910/model-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/aon082910/model-hub/actions/workflows/ci.yml)
+
 Source: [github.com/aon082910/model-hub](https://github.com/aon082910/model-hub) ·
 Image: [hub.docker.com/r/allornothing/model-hub](https://hub.docker.com/r/allornothing/model-hub)
 
@@ -162,3 +164,25 @@ gated behind JS or auth you'll need to open the direct file URL in a tab first.
 - **Notifications**: `app/notify.py` — generic webhook POST, best-effort
 - **Migrations**: `app/db.py` auto-adds new columns to existing SQLite tables on startup (no Alembic; fine for this project's size, but note it if you fork it)
 - **Frontend**: vanilla JS + Three.js, no build step (`app/static/`)
+
+## CI / Tests
+
+`tests/test_app.py` is an end-to-end integration suite against a real (temp-dir) instance
+of the app — auth setup/login/logout, the extension API key's scope (import-only), mesh
+volume parsing on a real generated STL, duplicate detection, print estimates, and the
+filament-deduction-happens-exactly-once behavior. Run locally:
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+`.github/workflows/ci.yml` runs that suite on every push/PR, then (on push to `master` or
+a `v*` tag, and only once tests pass) builds and pushes the image to Docker Hub. That push
+step needs two repository secrets that aren't set by default — add them under
+**Settings → Secrets and variables → Actions**:
+- `DOCKERHUB_USERNAME` — your Docker Hub username
+- `DOCKERHUB_TOKEN` — a Docker Hub [access token](https://hub.docker.com/settings/security) (not your password)
+
+Without those secrets the `test` job still runs fine; only the `docker` job (which needs
+them to authenticate) will fail.
