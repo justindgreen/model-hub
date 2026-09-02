@@ -5,7 +5,7 @@ LIBRARY_PATH = Path(os.environ.get("LIBRARY_PATH", "/data"))
 CONFIG_PATH = Path(os.environ.get("CONFIG_PATH", "/config"))
 CONFIG_PATH.mkdir(parents=True, exist_ok=True)
 
-DB_PATH = CONFIG_PATH / "meshory.db"
+DB_PATH = CONFIG_PATH / "modelhub.db"
 THUMB_DIR = CONFIG_PATH / "thumbnails"
 THUMB_DIR.mkdir(parents=True, exist_ok=True)
 

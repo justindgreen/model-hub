@@ -1,14 +1,14 @@
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg.type !== 'meshory-import') return false;
+  if (msg.type !== 'modelhub-import') return false;
 
   (async () => {
     const { serverUrl, apiKey } = await chrome.storage.sync.get(['serverUrl', 'apiKey']);
     if (!serverUrl) {
-      sendResponse({ ok: false, error: 'Set the Meshory server URL in the extension popup first.' });
+      sendResponse({ ok: false, error: 'Set the Model Hub server URL in the extension popup first.' });
       return;
     }
     if (!apiKey) {
-      sendResponse({ ok: false, error: 'Set the Meshory extension API key in the extension popup first (copy it from Meshory\'s Settings tab).' });
+      sendResponse({ ok: false, error: 'Set the Model Hub extension API key in the extension popup first (copy it from Model Hub\'s Settings tab).' });
       return;
     }
 
@@ -30,7 +30,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
         const importResp = await fetch(`${serverUrl}/api/library/import`, {
           method: 'POST',
-          headers: { 'X-Meshory-Api-Key': apiKey },
+          headers: { 'X-Model-Hub-Api-Key': apiKey },
           body: form,
         });
         if (!importResp.ok) {

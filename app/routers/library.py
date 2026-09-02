@@ -52,7 +52,7 @@ async def import_file(
     license: Optional[str] = Form(None),
     session: Session = Depends(get_session),
 ):
-    """Receives a model file pushed from the Meshory browser extension
+    """Receives a model file pushed from the Model Hub browser extension
     (or any other client) and files it into the library."""
     content = await file.read()
     try:

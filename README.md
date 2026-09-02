@@ -1,7 +1,7 @@
-# Meshory (self-hosted)
+# Model Hub (self-hosted)
 
-Source: [github.com/aon082910/meshory-selfhosted](https://github.com/aon082910/meshory-selfhosted) ·
-Image: [hub.docker.com/r/allornothing/meshory-selfhosted](https://hub.docker.com/r/allornothing/meshory-selfhosted)
+Source: [github.com/aon082910/model-hub](https://github.com/aon082910/model-hub) ·
+Image: [hub.docker.com/r/allornothing/model-hub](https://hub.docker.com/r/allornothing/model-hub)
 
 An open, self-hosted clone of [meshory.com](https://meshory.com)'s feature set for Unraid:
 STL/3MF/OBJ/STEP/FBX library management, thumbnails, duplicate detection, AI
@@ -21,10 +21,10 @@ Then open http://localhost:8420. Put some STL/3MF files in `./data`, click
 
 ## Deploy to Unraid
 
-1. **Image is published** at [allornothing/meshory-selfhosted](https://hub.docker.com/r/allornothing/meshory-selfhosted)
+1. **Image is published** at [allornothing/model-hub](https://hub.docker.com/r/allornothing/model-hub)
    on Docker Hub — Unraid can pull it directly, no build step needed. (To build your own fork
-   instead: `docker build -t <you>/meshory-selfhosted:latest . && docker push <you>/meshory-selfhosted:latest`,
-   then edit `unraid/meshory.xml` to match.)
+   instead: `docker build -t <you>/model-hub:latest . && docker push <you>/model-hub:latest`,
+   then edit `unraid/model-hub.xml` to match.)
 
 2. **(Optional, for local AI) Install Ollama from Community Applications first** —
    search "ollama" in the Apps tab, install it, then in its container console run:
@@ -33,11 +33,11 @@ Then open http://localhost:8420. Put some STL/3MF files in `./data`, click
    ollama pull nomic-embed-text
    ```
 
-3. **Add the Meshory template**: Docker tab → Add Container → toggle
+3. **Add the Model Hub template**: Docker tab → Add Container → toggle
    "Template" mode off → in the **Template** field near the top paste:
-   `https://raw.githubusercontent.com/aon082910/meshory-selfhosted/master/unraid/meshory.xml`
+   `https://raw.githubusercontent.com/aon082910/model-hub/master/unraid/model-hub.xml`
    — Unraid fetches it and pre-fills everything below. (Alternative: copy
-   `unraid/meshory.xml` to `/boot/config/plugins/dockerMan/templates-user/` on the
+   `unraid/model-hub.xml` to `/boot/config/plugins/dockerMan/templates-user/` on the
    flash drive and it'll appear under "User templates" instead.)
 
 4. Set **Library Path** to the Unraid share holding your model files (e.g.
@@ -127,18 +127,18 @@ notify script, so this is a generic JSON POST instead — point it at:
 ## Browser extension
 
 `browser-extension/` is a separate, small Chrome/Edge (Manifest V3) extension. It is not
-part of the Docker image — it installs in your browser and talks to your running Meshory
+part of the Docker image — it installs in your browser and talks to your running Model Hub
 server over the network.
 
 **Install (unpacked, until it's published to a store):**
 1. Open `chrome://extensions`, enable **Developer mode**.
 2. **Load unpacked** → select the `browser-extension/` folder.
-3. In Meshory, go to **Settings → Browser Extension** and copy the API key.
-4. Click the extension icon → enter your Meshory server URL (e.g. `http://192.168.1.50:8420` —
+3. In Model Hub, go to **Settings → Browser Extension** and copy the API key.
+4. Click the extension icon → enter your Model Hub server URL (e.g. `http://192.168.1.50:8420` —
    your Unraid host's IP and the WebUI port) and paste the API key → **Save** (grants the
    extension permission to reach that one origin) → **Test Connection**.
 
-**Use:** open a model page on printables.com or makerworld.com. A **📦 Send to Meshory**
+**Use:** open a model page on printables.com or makerworld.com. A **📦 Send to Model Hub**
 button appears bottom-right. It reads the page's `schema.org` JSON-LD (title/author/license —
 the same structured data search engines use, which is far less brittle than scraping CSS
 classes) and scans the page for direct `.stl/.3mf/.step/.obj/.fbx/.zip` links, lets you

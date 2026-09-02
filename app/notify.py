@@ -12,7 +12,7 @@ from sqlmodel import Session
 
 from app.settings_store import get_setting
 
-logger = logging.getLogger("meshory.notify")
+logger = logging.getLogger("modelhub.notify")
 
 
 def notify(session: Session, title: str, message: str):

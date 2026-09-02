@@ -1,10 +1,10 @@
 version: "3.8"
 
 services:
-  meshory:
+  model-hub:
     build: .
-    image: meshory-selfhosted:latest
-    container_name: meshory
+    image: allornothing/model-hub:latest
+    container_name: model-hub
     ports:
       - "8420:8420"
     volumes:
@@ -34,7 +34,7 @@ services:
   # Settings) if you'd rather use OpenRouter/OpenAI with your own key.
   ollama:
     image: ollama/ollama:latest
-    container_name: meshory-ollama
+    container_name: model-hub-ollama
     volumes:
       - ./ollama-data:/root/.ollama
     ports:

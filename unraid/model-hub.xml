@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <Container version="2">
-  <Name>Meshory</Name>
-  <Repository>allornothing/meshory-selfhosted:latest</Repository>
-  <Registry>https://hub.docker.com/r/allornothing/meshory-selfhosted</Registry>
+  <Name>Model Hub</Name>
+  <Repository>allornothing/model-hub:latest</Repository>
+  <Registry>https://hub.docker.com/r/allornothing/model-hub</Registry>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>bash</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/allornothing/meshory-selfhosted</Support>
+  <Support>https://github.com/aon082910/model-hub</Support>
   <Project>https://meshory.com/</Project>
   <Overview>
 Self-hosted, open clone of Meshory's 3D print file library: STL/3MF/OBJ/STEP/FBX
@@ -24,8 +24,8 @@ MakerWorld, and optional webhook notifications (ntfy/Discord/Slack).
   </Overview>
   <Category>Tools: Productivity:</Category>
   <WebUI>http://[IP]:[PORT:8420]/</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/aon082910/meshory-selfhosted/master/unraid/meshory.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/aon082910/meshory-selfhosted/master/unraid/icon.png</Icon>
+  <TemplateURL>https://raw.githubusercontent.com/aon082910/model-hub/master/unraid/model-hub.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/aon082910/model-hub/master/unraid/icon.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>
@@ -35,11 +35,11 @@ MakerWorld, and optional webhook notifications (ntfy/Discord/Slack).
   <Requires>Optional: an Ollama container (install the official "ollama" template from
 Community Applications first) if you want local AI instead of an API key.</Requires>
 
-  <Config Name="WebUI Port" Target="8420" Default="8420" Mode="tcp" Description="Port for the Meshory web interface" Type="Port" Display="always" Required="true" Mask="false">8420</Config>
+  <Config Name="WebUI Port" Target="8420" Default="8420" Mode="tcp" Description="Port for the Model Hub web interface" Type="Port" Display="always" Required="true" Mask="false">8420</Config>
 
-  <Config Name="Library Path" Target="/data" Default="/mnt/user/models/meshory-library" Mode="rw" Description="Folder containing your STL/3MF/OBJ/STEP/FBX files. Read-only usage: files are hashed and thumbnailed, never modified." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/models/meshory-library</Config>
+  <Config Name="Library Path" Target="/data" Default="/mnt/user/models/model-hub-library" Mode="rw" Description="Folder containing your STL/3MF/OBJ/STEP/FBX files. Read-only usage: files are hashed and thumbnailed, never modified." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/models/model-hub-library</Config>
 
-  <Config Name="App Config/DB" Target="/config" Default="/mnt/user/appdata/meshory" Mode="rw" Description="Where the SQLite database, thumbnails, and settings are stored." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/meshory</Config>
+  <Config Name="App Config/DB" Target="/config" Default="/mnt/user/appdata/model-hub" Mode="rw" Description="Where the SQLite database, thumbnails, and settings are stored." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/model-hub</Config>
 
   <Config Name="Scan Interval" Target="SCAN_INTERVAL_SECONDS" Default="300" Mode="" Description="Seconds between automatic background library scans." Type="Variable" Display="advanced" Required="false" Mask="false">300</Config>
 

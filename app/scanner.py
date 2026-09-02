@@ -9,7 +9,7 @@ from app.config import LIBRARY_PATH, SUPPORTED_EXTENSIONS, MESH_EXTENSIONS
 from app.models import Model3D
 from app.thumbnails import generate_thumbnail, mesh_stats
 
-logger = logging.getLogger("meshory.scanner")
+logger = logging.getLogger("modelhub.scanner")
 
 
 def hash_file(path: Path, chunk_size: int = 1024 * 1024) -> str:

@@ -55,77 +55,77 @@
 
   function buildButton() {
     const btn = document.createElement('button');
-    btn.id = 'meshory-import-btn';
-    btn.textContent = '📦 Send to Meshory';
+    btn.id = 'modelhub-import-btn';
+    btn.textContent = '📦 Send to Model Hub';
     btn.addEventListener('click', openPanel);
     document.body.appendChild(btn);
   }
 
   function openPanel() {
-    const existing = document.getElementById('meshory-panel');
+    const existing = document.getElementById('modelhub-panel');
     if (existing) { existing.remove(); return; }
 
     const meta = collectMetadata();
     const panel = document.createElement('div');
-    panel.id = 'meshory-panel';
+    panel.id = 'modelhub-panel';
     panel.innerHTML = `
-      <h3>Send to Meshory</h3>
+      <h3>Send to Model Hub</h3>
       ${meta.fileLinks.length === 0
-        ? `<p class="meshory-warn">No direct model file links found on this page. Open the actual download link in a new tab, then use the extension from that page/tab.</p>`
+        ? `<p class="modelhub-warn">No direct model file links found on this page. Open the actual download link in a new tab, then use the extension from that page/tab.</p>`
         : `<label>Files</label>
-           <div id="meshory-files">
+           <div id="modelhub-files">
              ${meta.fileLinks.map((f, i) => `
-               <label class="meshory-file-row">
+               <label class="modelhub-file-row">
                  <input type="checkbox" value="${encodeURIComponent(f)}" checked>
                  <span>${decodeURIComponent(f.split('/').pop().split('?')[0])}</span>
                </label>`).join('')}
            </div>`}
       <label>Designer</label>
-      <input id="meshory-designer" value="${(meta.designer || '').replace(/"/g, '&quot;')}">
+      <input id="modelhub-designer" value="${(meta.designer || '').replace(/"/g, '&quot;')}">
       <label>License</label>
-      <input id="meshory-license" value="${(meta.license || '').replace(/"/g, '&quot;')}">
-      <div id="meshory-status"></div>
-      <div class="meshory-actions">
-        <button id="meshory-cancel">Cancel</button>
-        <button id="meshory-send" ${meta.fileLinks.length === 0 ? 'disabled' : ''}>Import</button>
+      <input id="modelhub-license" value="${(meta.license || '').replace(/"/g, '&quot;')}">
+      <div id="modelhub-status"></div>
+      <div class="modelhub-actions">
+        <button id="modelhub-cancel">Cancel</button>
+        <button id="modelhub-send" ${meta.fileLinks.length === 0 ? 'disabled' : ''}>Import</button>
       </div>
     `;
     document.body.appendChild(panel);
 
-    panel.querySelector('#meshory-cancel').addEventListener('click', () => panel.remove());
-    panel.querySelector('#meshory-send').addEventListener('click', () => sendImport(panel, meta));
+    panel.querySelector('#modelhub-cancel').addEventListener('click', () => panel.remove());
+    panel.querySelector('#modelhub-send').addEventListener('click', () => sendImport(panel, meta));
   }
 
   function sendImport(panel, meta) {
-    const status = panel.querySelector('#meshory-status');
-    const checked = Array.from(panel.querySelectorAll('#meshory-files input:checked'))
+    const status = panel.querySelector('#modelhub-status');
+    const checked = Array.from(panel.querySelectorAll('#modelhub-files input:checked'))
       .map((el) => decodeURIComponent(el.value));
     if (checked.length === 0) {
       status.textContent = 'Select at least one file.';
-      status.className = 'meshory-err';
+      status.className = 'modelhub-err';
       return;
     }
-    const designer = panel.querySelector('#meshory-designer').value;
-    const license = panel.querySelector('#meshory-license').value;
+    const designer = panel.querySelector('#modelhub-designer').value;
+    const license = panel.querySelector('#modelhub-license').value;
 
     status.textContent = `Importing ${checked.length} file(s)…`;
     status.className = '';
 
     chrome.runtime.sendMessage(
-      { type: 'meshory-import', fileUrls: checked, sourceUrl: meta.sourceUrl, designer, license },
+      { type: 'modelhub-import', fileUrls: checked, sourceUrl: meta.sourceUrl, designer, license },
       (response) => {
         if (!response) {
           status.textContent = 'No response from extension background worker.';
-          status.className = 'meshory-err';
+          status.className = 'modelhub-err';
           return;
         }
         if (response.ok) {
           status.textContent = `Imported ${response.imported}/${checked.length}.` +
             (response.errors.length ? ` Errors: ${response.errors.join('; ')}` : '');
-          status.className = response.errors.length ? 'meshory-err' : 'meshory-ok';
+          status.className = response.errors.length ? 'modelhub-err' : 'modelhub-ok';
         } else {
           status.textContent = response.error || 'Import failed.';
-          status.className = 'meshory-err';
+          status.className = 'modelhub-err';
         }
       }
     );

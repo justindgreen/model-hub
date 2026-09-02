@@ -4,7 +4,7 @@ from sqlmodel import SQLModel, create_engine, Session
 from app.config import DB_PATH
 
 engine = create_engine(f"sqlite:///{DB_PATH}", connect_args={"check_same_thread": False})
-logger = logging.getLogger("meshory.db")
+logger = logging.getLogger("modelhub.db")
 
 _SQLITE_TYPES = {"INTEGER": "INTEGER", "VARCHAR": "TEXT", "BOOLEAN": "BOOLEAN",
                   "FLOAT": "FLOAT", "DATETIME": "DATETIME", "BLOB": "BLOB"}

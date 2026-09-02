@@ -1,4 +1,4 @@
-#meshory-import-btn {
+#modelhub-import-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -13,9 +13,9 @@
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(0,0,0,0.35);
 }
-#meshory-import-btn:hover { background: #3f7ee0; }
+#modelhub-import-btn:hover { background: #3f7ee0; }
 
-#meshory-panel {
+#modelhub-panel {
   position: fixed;
   bottom: 70px;
   right: 20px;
@@ -31,23 +31,23 @@
   font-family: system-ui, sans-serif;
   box-shadow: 0 6px 24px rgba(0,0,0,0.5);
 }
-#meshory-panel h3 { margin: 0 0 10px; font-size: 14px; }
-#meshory-panel label { display: block; font-size: 11px; color: #9aa0a6; margin: 8px 0 4px; }
-#meshory-panel input[type="text"], #meshory-panel input:not([type]) {
+#modelhub-panel h3 { margin: 0 0 10px; font-size: 14px; }
+#modelhub-panel label { display: block; font-size: 11px; color: #9aa0a6; margin: 8px 0 4px; }
+#modelhub-panel input[type="text"], #modelhub-panel input:not([type]) {
   width: 100%; box-sizing: border-box; padding: 6px 8px;
   background: #1e2126; border: 1px solid #3a3f47; border-radius: 4px; color: #e8e8e8; font-size: 12px;
 }
-.meshory-file-row { display: flex !important; align-items: center; gap: 6px; font-size: 12px; color: #cfd3d8;
+.modelhub-file-row { display: flex !important; align-items: center; gap: 6px; font-size: 12px; color: #cfd3d8;
   margin-bottom: 2px; word-break: break-all; }
-.meshory-file-row input { width: auto !important; }
-.meshory-actions { display: flex; gap: 8px; margin-top: 12px; }
-.meshory-actions button {
+.modelhub-file-row input { width: auto !important; }
+.modelhub-actions { display: flex; gap: 8px; margin-top: 12px; }
+.modelhub-actions button {
   flex: 1; padding: 7px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;
 }
-#meshory-send { background: #4f8ef7; color: #fff; }
-#meshory-send:disabled { background: #3a3f47; cursor: not-allowed; }
-#meshory-cancel { background: #2a2d33; color: #e8e8e8; }
-#meshory-status { font-size: 11px; margin-top: 8px; min-height: 14px; }
-.meshory-ok { color: #4caf7c; }
-.meshory-err { color: #e0645a; }
-.meshory-warn { font-size: 12px; color: #e0a800; }
+#modelhub-send { background: #4f8ef7; color: #fff; }
+#modelhub-send:disabled { background: #3a3f47; cursor: not-allowed; }
+#modelhub-cancel { background: #2a2d33; color: #e8e8e8; }
+#modelhub-status { font-size: 11px; margin-top: 8px; min-height: 14px; }
+.modelhub-ok { color: #4caf7c; }
+.modelhub-err { color: #e0645a; }
+.modelhub-warn { font-size: 12px; color: #e0a800; }

@@ -11,7 +11,7 @@ from sqlmodel import Session
 from app.config import CONFIG_PATH
 from app.settings_store import get_setting, set_setting
 
-SESSION_COOKIE = "meshory_session"
+SESSION_COOKIE = "modelhub_session"
 SESSION_TTL_SECONDS = 30 * 24 * 3600  # 30 days
 SECRET_KEY_PATH = CONFIG_PATH / "secret.key"
 
@@ -109,7 +109,7 @@ def request_is_authenticated(request: Request, session: Session) -> bool:
     if token and verify_session_token(token):
         return True
     if request.url.path in API_KEY_ALLOWED_PATHS:
-        api_key = request.headers.get("x-meshory-api-key")
+        api_key = request.headers.get("x-model-hub-api-key")
         stored_key = get_setting(session, "extension_api_key")
         if api_key and stored_key and hmac.compare_digest(api_key, stored_key):
             return True

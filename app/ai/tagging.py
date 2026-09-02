@@ -8,7 +8,7 @@ from app.config import THUMB_DIR
 from app.models import Model3D, Tag
 from app.ai import get_provider
 
-logger = logging.getLogger("meshory.tagging")
+logger = logging.getLogger("modelhub.tagging")
 
 
 def pack_embedding(vec: List[float]) -> bytes:

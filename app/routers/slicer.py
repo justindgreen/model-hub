@@ -6,7 +6,7 @@ from app.settings_store import get_setting
 
 router = APIRouter(prefix="/api/slicer", tags=["slicer"])
 
-# Slicers Meshory hands off to; here we just expose the same catalog so the
+# Slicers Model Hub hands off to; here we just expose the same catalog so the
 # frontend can offer "Open in <slicer>" -- since the app runs in a container,
 # not on the user's desktop, "opening" means: give the slicer a path it can
 # read (via the same share Unraid already exports) plus a direct download URL.
@@ -28,7 +28,7 @@ def handoff(model_id: int, session: Session = Depends(get_session)):
     if not model:
         raise HTTPException(404, "Model not found")
 
-    share_prefix = get_setting(session, "unraid_share_path", "\\\\TOWER\\meshory-library")
+    share_prefix = get_setting(session, "unraid_share_path", "\\\\TOWER\\model-hub-library")
     win_path = model.path.replace("/", "\\")
     network_path = share_prefix.rstrip("/\\") + "\\" + win_path
     return {

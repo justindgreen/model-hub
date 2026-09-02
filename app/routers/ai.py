@@ -49,7 +49,7 @@ def _run_batch_tagging(model_ids: list[int]):
                     pass
             _job_state["done"] += 1
         from app.notify import notify
-        notify(session, "Meshory: tagging finished",
+        notify(session, "Model Hub: tagging finished",
                f"Tagged {_job_state['done']}/{_job_state['total']} model(s)." +
                (f" Est. cost: ${_job_state['estimated_cost_usd']:.3f}" if _job_state["estimated_cost_usd"] else ""))
     _job_state["running"] = False

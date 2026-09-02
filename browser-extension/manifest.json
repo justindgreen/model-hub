@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Meshory Importer",
+  "name": "Model Hub Importer",
   "version": "1.0.0",
-  "description": "Send model files from Printables or MakerWorld straight into your self-hosted Meshory library.",
+  "description": "Send model files from Printables or MakerWorld straight into your self-hosted Model Hub library.",
   "action": {
     "default_popup": "popup.html"
   },

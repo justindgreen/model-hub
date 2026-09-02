@@ -13,12 +13,12 @@ from app.routers import library, tags, collections, filament, queue, settings, a
 from app.auth import path_requires_auth, request_is_authenticated, bootstrap_from_env, ensure_extension_api_key
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("meshory")
+logger = logging.getLogger("modelhub")
 
-app = FastAPI(title="Meshory Self-Hosted")
+app = FastAPI(title="Model Hub")
 
 # Permissive CORS: this app is meant to run on a private LAN/Unraid host, and the
-# Meshory browser extension (running as an extension background worker, on an
+# Model Hub browser extension (running as an extension background worker, on an
 # origin the admin doesn't control) needs to POST imports to it.
 app.add_middleware(
     CORSMiddleware,
@@ -74,7 +74,7 @@ async def _background_scan_loop():
                 result = scan_library(session)
                 logger.info("Background scan: %s", result)
                 if result.get("added"):
-                    notify(session, "Meshory: new files", f"{result['added']} new model(s) added to your library.")
+                    notify(session, "Model Hub: new files", f"{result['added']} new model(s) added to your library.")
         except Exception:
             logger.exception("Background scan failed")
         await asyncio.sleep(SCAN_INTERVAL_SECONDS)
