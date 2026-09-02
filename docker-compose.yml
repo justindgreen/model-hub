@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  meshory:
+    build: .
+    image: meshory-selfhosted:latest
+    container_name: meshory
+    ports:
+      - "8420:8420"
+    volumes:
+      - ./data:/data
+      - ./config:/config
+    environment:
+      - LIBRARY_PATH=/data
+      - CONFIG_PATH=/config
+      - SCAN_INTERVAL_SECONDS=300
+      # Used only when AI mode is set to "local" in Settings
+      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_VISION_MODEL=llava
+      - OLLAMA_EMBED_MODEL=nomic-embed-text
+      # Optional: set both to skip the in-app first-run "create admin account"
+      # screen. Leave blank to use that screen instead.
+      - AUTH_USERNAME=
+      - AUTH_PASSWORD=
+      # Optional: path *inside the container* to a headless slicer CLI binary
+      # for exact print-time/filament estimates. Leave unset to use the
+      # built-in volumetric estimate instead.
+      - SLICER_CLI_PATH=
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  # Optional local AI engine. Skip this service (and set AI mode to "api" in
+  # Settings) if you'd rather use OpenRouter/OpenAI with your own key.
+  ollama:
+    image: ollama/ollama:latest
+    container_name: meshory-ollama
+    volumes:
+      - ./ollama-data:/root/.ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    # Uncomment to use an Nvidia GPU on the host:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]

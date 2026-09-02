@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Meshory Importer",
+  "version": "1.0.0",
+  "description": "Send model files from Printables or MakerWorld straight into your self-hosted Meshory library.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.printables.com/*", "*://*.makerworld.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["*://*.printables.com/*", "*://*.makerworld.com/*"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"]
+}

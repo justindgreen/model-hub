@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>Meshory</Name>
+  <Repository>allornothing/meshory-selfhosted:latest</Repository>
+  <Registry>https://hub.docker.com/r/allornothing/meshory-selfhosted</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/allornothing/meshory-selfhosted</Support>
+  <Project>https://meshory.com/</Project>
+  <Overview>
+Self-hosted, open clone of Meshory's 3D print file library: STL/3MF/OBJ/STEP/FBX
+organization, thumbnails, duplicate detection, tagging, semantic search, smart
+collections, filament inventory and a print queue. AI tagging/search can run
+against a local Ollama instance (nothing leaves your network) or an external
+OpenRouter/OpenAI-compatible API using your own key -- switch anytime from
+the in-app Settings tab. Point "Library Path" at the share where your STL/3MF
+files already live; nothing is modified on disk, files are only read and hashed.
+On first open you'll be asked to create an admin login (or set Admin
+Username/Password below to skip that screen). Also includes print time/filament
+weight estimates, a browser extension for one-click import from Printables/
+MakerWorld, and optional webhook notifications (ntfy/Discord/Slack).
+  </Overview>
+  <Category>Tools: Productivity:</Category>
+  <WebUI>http://[IP]:[PORT:8420]/</WebUI>
+  <TemplateURL/>
+  <Icon>https://raw.githubusercontent.com/allornothing/meshory-selfhosted/main/icon.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>Optional: an Ollama container (install the official "ollama" template from
+Community Applications first) if you want local AI instead of an API key.</Requires>
+
+  <Config Name="WebUI Port" Target="8420" Default="8420" Mode="tcp" Description="Port for the Meshory web interface" Type="Port" Display="always" Required="true" Mask="false">8420</Config>
+
+  <Config Name="Library Path" Target="/data" Default="/mnt/user/models/meshory-library" Mode="rw" Description="Folder containing your STL/3MF/OBJ/STEP/FBX files. Read-only usage: files are hashed and thumbnailed, never modified." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/models/meshory-library</Config>
+
+  <Config Name="App Config/DB" Target="/config" Default="/mnt/user/appdata/meshory" Mode="rw" Description="Where the SQLite database, thumbnails, and settings are stored." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/meshory</Config>
+
+  <Config Name="Scan Interval" Target="SCAN_INTERVAL_SECONDS" Default="300" Mode="" Description="Seconds between automatic background library scans." Type="Variable" Display="advanced" Required="false" Mask="false">300</Config>
+
+  <Config Name="Ollama Host" Target="OLLAMA_HOST" Default="http://ollama:11434" Mode="" Description="Address of your Ollama container/instance for local AI tagging. Only used when AI mode is set to 'local' in the app's Settings tab." Type="Variable" Display="advanced" Required="false" Mask="false">http://ollama:11434</Config>
+
+  <Config Name="Ollama Vision Model" Target="OLLAMA_VISION_MODEL" Default="llava" Mode="" Description="Vision-capable Ollama model used for auto-tagging thumbnails." Type="Variable" Display="advanced" Required="false" Mask="false">llava</Config>
+
+  <Config Name="Ollama Embed Model" Target="OLLAMA_EMBED_MODEL" Default="nomic-embed-text" Mode="" Description="Ollama embedding model used for semantic search." Type="Variable" Display="advanced" Required="false" Mask="false">nomic-embed-text</Config>
+
+  <Config Name="Admin Username" Target="AUTH_USERNAME" Default="" Mode="" Description="Creates the admin login automatically on first start. Leave blank to set it up from the WebUI's first-run screen instead." Type="Variable" Display="always" Required="false" Mask="false"></Config>
+
+  <Config Name="Admin Password" Target="AUTH_PASSWORD" Default="" Mode="" Description="Paired with Admin Username above. Leave both blank to use the in-app setup screen instead (recommended -- avoids the password sitting in plain text in the container's env)." Type="Variable" Display="always" Required="false" Mask="true"></Config>
+
+  <Config Name="Slicer CLI Path (advanced)" Target="SLICER_CLI_PATH" Default="" Mode="" Description="Optional: absolute path *inside the container* to a headless slicer CLI binary (e.g. an extracted PrusaSlicer/OrcaSlicer AppImage) for exact print time/filament estimates instead of the built-in volumetric approximation. Bind-mount the binary in via 'Add another Path' first, then point this at it." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+</Container>

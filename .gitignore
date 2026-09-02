@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# local test/dev volumes
+data/
+config/
+testdata/
+testconfig/
+ollama-data/

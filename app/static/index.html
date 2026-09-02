@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Meshory Self-Hosted</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="importmap">
+{ "imports": { "three": "/assets/vendor/three.module.min.js" } }
+</script>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>Meshory <span class="badge">self-hosted</span></h1>
+    <nav id="tabs">
+      <button data-tab="library" class="active">Library</button>
+      <button data-tab="collections">Collections</button>
+      <button data-tab="filament">Filament</button>
+      <button data-tab="queue">Print Queue</button>
+      <button data-tab="settings">Settings</button>
+    </nav>
+  </header>
+
+  <section id="tab-library" class="tab active">
+    <div class="toolbar">
+      <input id="search-box" placeholder="Search filename / description...">
+      <button id="semantic-btn" title="AI semantic search">✨ Semantic</button>
+      <button id="scan-btn">Rescan Library</button>
+      <button id="tag-all-btn">Tag All (AI)</button>
+      <label><input type="checkbox" id="dup-only"> Duplicates only</label>
+      <span id="tag-progress"></span>
+    </div>
+    <div id="grid" class="grid"></div>
+  </section>
+
+  <section id="tab-collections" class="tab">
+    <h2>Collections</h2>
+    <div class="row">
+      <input id="new-collection-name" placeholder="New collection name">
+      <button id="add-collection-btn">Add</button>
+    </div>
+    <ul id="collections-list"></ul>
+
+    <h2>Smart Collections <small>(rule-based, auto-filing)</small></h2>
+    <div class="row">
+      <input id="smart-name" placeholder="Name">
+      <select id="smart-field">
+        <option value="tag">tag</option>
+        <option value="filename">filename</option>
+        <option value="extension">extension</option>
+        <option value="designer">designer</option>
+        <option value="license">license</option>
+        <option value="description">description</option>
+      </select>
+      <select id="smart-op">
+        <option value="contains">contains</option>
+        <option value="equals">equals</option>
+        <option value="starts_with">starts with</option>
+      </select>
+      <input id="smart-value" placeholder="value">
+      <button id="add-smart-btn">Add Smart Collection</button>
+    </div>
+    <ul id="smart-collections-list"></ul>
+  </section>
+
+  <section id="tab-filament" class="tab">
+    <h2>Filament Inventory</h2>
+    <div class="row">
+      <input id="fil-material" placeholder="Material (PLA/PETG/ABS)">
+      <input id="fil-brand" placeholder="Brand">
+      <input id="fil-color" placeholder="Color">
+      <input id="fil-weight" placeholder="Spool weight g" value="1000">
+      <button id="add-filament-btn">Add Spool</button>
+    </div>
+    <table id="filament-table"><thead><tr>
+      <th>Material</th><th>Brand</th><th>Color</th><th>Remaining</th><th></th>
+    </tr></thead><tbody></tbody></table>
+  </section>
+
+  <section id="tab-queue" class="tab">
+    <h2>Print Queue</h2>
+    <ul id="queue-list"></ul>
+  </section>
+
+  <section id="tab-settings" class="tab">
+    <h2>AI Configuration</h2>
+    <div class="settings-form">
+      <label>Mode
+        <select id="ai-mode">
+          <option value="local">Local (Ollama)</option>
+          <option value="api">API (OpenRouter-compatible)</option>
+          <option value="off">Off</option>
+        </select>
+      </label>
+      <fieldset id="local-fields">
+        <legend>Local (Ollama)</legend>
+        <label>Host <input id="ollama-host" placeholder="http://ollama:11434"></label>
+        <label>Vision model <input id="ollama-vision-model" placeholder="llava"></label>
+        <label>Embed model <input id="ollama-embed-model" placeholder="nomic-embed-text"></label>
+      </fieldset>
+      <fieldset id="api-fields">
+        <legend>API</legend>
+        <label>API base <input id="ai-api-base" placeholder="https://openrouter.ai/api/v1"></label>
+        <label>API key <input id="ai-api-key" type="password" placeholder="sk-..."></label>
+        <label>Model <input id="ai-api-model" placeholder="openai/gpt-4o-mini"></label>
+      </fieldset>
+      <label>Unraid library share path
+        <input id="unraid-share-path" placeholder="\\TOWER\meshory-library">
+      </label>
+      <button id="save-settings-btn">Save Settings</button>
+      <span id="settings-status"></span>
+    </div>
+
+    <h2>Print Estimate Defaults</h2>
+    <div class="settings-form">
+      <label>Default material <input id="est-material" placeholder="PLA"></label>
+      <label>Material density (g/cm&sup3;) <input id="est-density" placeholder="1.24"></label>
+      <label>Default infill (0-1) <input id="est-infill" placeholder="0.15"></label>
+      <label>Optional exact slicer CLI path (advanced, set via container env <code>SLICER_CLI_PATH</code>, read-only here)
+        <input id="est-slicer-path" disabled>
+      </label>
+      <button id="save-estimate-settings-btn">Save Estimate Defaults</button>
+    </div>
+
+    <h2>Notifications</h2>
+    <div class="settings-form">
+      <label>Webhook URL <small>(ntfy.sh, Discord, Slack, or any endpoint accepting a JSON POST -- fired when a scan finds new files or a tagging job finishes)</small>
+        <input id="notify-webhook-url" placeholder="https://ntfy.sh/your-topic">
+      </label>
+      <button id="save-notify-btn">Save Notification Settings</button>
+    </div>
+
+    <h2>Browser Extension</h2>
+    <div class="settings-form">
+      <label>Extension API key <small>(paste into the Meshory browser extension's popup alongside this server's URL)</small>
+        <input id="ext-api-key" readonly>
+      </label>
+      <button id="regen-key-btn">Regenerate Key</button>
+    </div>
+
+    <h2>Account</h2>
+    <div class="settings-form">
+      <label>Current password <input id="cur-password" type="password"></label>
+      <label>New password <input id="new-password" type="password"></label>
+      <button id="change-password-btn">Change Password</button>
+      <button id="logout-btn">Log Out</button>
+      <span id="account-status"></span>
+    </div>
+  </section>
+
+  <div id="viewer-modal" class="modal hidden">
+    <div class="modal-content">
+      <button id="close-viewer">&times;</button>
+      <div id="viewer-canvas-wrap"><canvas id="viewer-canvas"></canvas></div>
+      <div id="viewer-info"></div>
+      <div class="row" id="viewer-estimate-row" style="margin-top:8px">
+        <select id="viewer-est-material">
+          <option value="PLA">PLA</option>
+          <option value="PETG">PETG</option>
+          <option value="ABS">ABS</option>
+          <option value="TPU">TPU</option>
+          <option value="Nylon">Nylon</option>
+        </select>
+        <input id="viewer-est-infill" placeholder="Infill % (default 15)" style="width:130px">
+        <button id="viewer-estimate-btn">Estimate Print</button>
+        <span id="viewer-estimate-result"></span>
+      </div>
+      <div class="row" style="margin-top:4px">
+        <select id="viewer-queue-filament"><option value="">(no filament selected)</option></select>
+        <button id="viewer-add-queue-btn">Add to Print Queue</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="auth-overlay" class="modal hidden">
+    <div class="modal-content" style="width:340px">
+      <h2 id="auth-title">Sign in</h2>
+      <div class="settings-form">
+        <label>Username <input id="auth-username" autocomplete="username"></label>
+        <label>Password <input id="auth-password" type="password" autocomplete="current-password"></label>
+        <button id="auth-submit-btn">Sign in</button>
+        <span id="auth-status"></span>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="module" src="/assets/app.js"></script>
+</body>
+</html>
