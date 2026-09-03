@@ -7,8 +7,8 @@
   <MyIP/>
   <Shell>bash</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/aon082910/model-hub</Support>
-  <Project>https://meshory.com/</Project>
+  <Support>https://github.com/aon082910/model-hub/issues</Support>
+  <Project>https://github.com/aon082910/model-hub</Project>
   <Overview>
 Self-hosted, open clone of Meshory's 3D print file library: STL/3MF/OBJ/STEP/FBX
 organization, thumbnails, duplicate detection, tagging, semantic search, smart
@@ -22,9 +22,10 @@ Username/Password below to skip that screen). Also includes print time/filament
 weight estimates, a browser extension for one-click import from Printables/
 MakerWorld, and optional webhook notifications (ntfy/Discord/Slack).
   </Overview>
-  <Category>Tools: Productivity:</Category>
+  <Category>Tools:Utilities Productivity:</Category>
   <WebUI>http://[IP]:[PORT:8420]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/aon082910/model-hub/master/unraid/model-hub.xml</TemplateURL>
+  <ReadMe>https://raw.githubusercontent.com/aon082910/model-hub/master/README.md</ReadMe>
   <Icon>https://raw.githubusercontent.com/aon082910/model-hub/master/unraid/icon.png</Icon>
   <ExtraParams/>
   <PostArgs/>
@@ -32,6 +33,16 @@ MakerWorld, and optional webhook notifications (ntfy/Discord/Slack).
   <DateInstalled/>
   <DonateText/>
   <DonateLink/>
+  <Date>2026-09-02</Date>
+  <Changes>
+### 1.0.0
+Initial release. STL/3MF/OBJ/FBX live viewer, AI auto-tagging + semantic search
+(local Ollama or API), smart collections, filament inventory, print queue with
+volumetric/slicer-based estimates, session auth, webhook notifications, and a
+Printables/MakerWorld browser extension.
+  </Changes>
+  <License>MIT</License>
+  <MinVer>6.9</MinVer>
   <Requires>Optional: an Ollama container (install the official "ollama" template from
 Community Applications first) if you want local AI instead of an API key.</Requires>
 
