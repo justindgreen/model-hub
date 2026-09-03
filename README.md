@@ -1,6 +1,6 @@
 # Model Hub (self-hosted)
 
-[![CI](https://github.com/aon082910/model-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/aon082910/model-hub/actions/workflows/ci.yml)
+[![tests](https://github.com/aon082910/model-hub/actions/workflows/tests.yml/badge.svg)](https://github.com/aon082910/model-hub/actions/workflows/tests.yml)
 
 Source: [github.com/aon082910/model-hub](https://github.com/aon082910/model-hub) ·
 Image: [hub.docker.com/r/allornothing/model-hub](https://hub.docker.com/r/allornothing/model-hub)
@@ -180,12 +180,16 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
-`.github/workflows/ci.yml` runs that suite on every push/PR, then (on push to `master` or
-a `v*` tag, and only once tests pass) builds and pushes the image to Docker Hub. That push
-step needs two repository secrets that aren't set by default — add them under
-**Settings → Secrets and variables → Actions**:
-- `DOCKERHUB_USERNAME` — your Docker Hub username
-- `DOCKERHUB_TOKEN` — a Docker Hub [access token](https://hub.docker.com/settings/security) (not your password)
+Two workflows:
+- **`.github/workflows/tests.yml`** — runs the pytest suite plus a no-push Docker build
+  (build-health check only) on every push to `master` and every PR. No secrets needed.
+- **`.github/workflows/release.yml`** — only on pushing a `v*` tag (or manual dispatch with
+  a version input) — builds and pushes `allornothing/model-hub:latest` and `:<version>` to
+  Docker Hub, then creates a GitHub release. Needs one repository secret that isn't set by
+  default — add it under **Settings → Secrets and variables → Actions**:
+  - `DOCKERHUB_TOKEN` — a Docker Hub [access token](https://hub.docker.com/settings/security)
+    with Read & Write permission (not your password). The username is `allornothing`, baked
+    into the workflow — no separate username secret needed.
 
-Without those secrets the `test` job still runs fine; only the `docker` job (which needs
-them to authenticate) will fail.
+  To cut a release: `git tag v1.0.1 && git push --tags`, or run the workflow manually from
+  the Actions tab with a version input.
