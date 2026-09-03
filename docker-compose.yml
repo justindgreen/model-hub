@@ -14,6 +14,10 @@ services:
       - LIBRARY_PATH=/data
       - CONFIG_PATH=/config
       - SCAN_INTERVAL_SECONDS=300
+      # Files under /config are chowned to this uid:gid on every start --
+      # defaults match Unraid's own nobody:users.
+      - PUID=99
+      - PGID=100
       # Used only when AI mode is set to "local" in Settings
       - OLLAMA_HOST=http://ollama:11434
       - OLLAMA_VISION_MODEL=llava

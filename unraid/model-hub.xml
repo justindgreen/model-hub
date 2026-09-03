@@ -38,8 +38,9 @@ MakerWorld, and optional webhook notifications (ntfy/Discord/Slack).
 ### 1.0.0
 Initial release. STL/3MF/OBJ/FBX live viewer, AI auto-tagging + semantic search
 (local Ollama or API), smart collections, filament inventory, print queue with
-volumetric/slicer-based estimates, session auth, webhook notifications, and a
-Printables/MakerWorld browser extension.
+volumetric/slicer-based estimates, session auth, webhook notifications, a
+Printables/MakerWorld browser extension, and PUID/PGID support so files under
+/config are owned by a real host user instead of root.
   </Changes>
   <License>MIT</License>
   <MinVer>6.9</MinVer>
@@ -51,6 +52,10 @@ Community Applications first) if you want local AI instead of an API key.</Requi
   <Config Name="Library Path" Target="/data" Default="/mnt/user/models/model-hub-library" Mode="rw" Description="Folder containing your STL/3MF/OBJ/STEP/FBX files. Read-only usage: files are hashed and thumbnailed, never modified." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/models/model-hub-library</Config>
 
   <Config Name="App Config/DB" Target="/config" Default="/mnt/user/appdata/model-hub" Mode="rw" Description="Where the SQLite database, thumbnails, and settings are stored." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/model-hub</Config>
+
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="Unraid's nobody user -- keeps /config editable from the host" Type="Variable" Display="always" Required="true" Mask="false">99</Config>
+
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Unraid's users group" Type="Variable" Display="always" Required="true" Mask="false">100</Config>
 
   <Config Name="Scan Interval" Target="SCAN_INTERVAL_SECONDS" Default="300" Mode="" Description="Seconds between automatic background library scans." Type="Variable" Display="advanced" Required="false" Mask="false">300</Config>
 

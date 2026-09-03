@@ -43,7 +43,10 @@ Then open http://localhost:8420. Put some STL/3MF files in `./data`, click
    flash drive and it'll appear under "User templates" instead.)
 
 4. Set **Library Path** to the Unraid share holding your model files (e.g.
-   `/mnt/user/models/`) and **App Config/DB** to an appdata folder. Apply.
+   `/mnt/user/models/`) and **App Config/DB** to an appdata folder. **PUID**/**PGID**
+   default to 99/100 (Unraid's `nobody:users`) — the container runs as this uid on
+   startup and chowns `/config` to it, so files it creates show up owned by a real
+   host user instead of root. Apply.
 
 5. Open the WebUI, go to **Settings**, pick AI mode:
    - **Local (Ollama)** — point "Host" at `http://<unraid-ip>:11434` (or the
