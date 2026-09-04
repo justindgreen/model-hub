@@ -27,8 +27,11 @@ button:disabled { cursor: default; opacity: .45; border-color: var(--border); }
 .card .fname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card .tags { color: var(--muted); font-size: 11px; }
 .card.duplicate { border-color: #e0a800; }
-.pagination { display: flex; justify-content: center; align-items: center; gap: 12px; margin: 18px 0 4px; }
-.pagination span { min-width: 220px; text-align: center; color: var(--muted); font-size: 13px; }
+.pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 18px 0 4px; flex-wrap: wrap; }
+.pagination > span { min-width: 150px; text-align: center; color: var(--muted); font-size: 13px; }
+.pagination-jump { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+.pagination-jump input { width: 72px; text-align: center; }
+.pagination-jump span { color: var(--muted); white-space: nowrap; }
 .row { display: flex; gap: 8px; margin-bottom: 12px; }
 ul { list-style: none; padding: 0; }
 li { padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
