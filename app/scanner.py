@@ -1,3 +1,4 @@
+import gc
 import hashlib
 import logging
 from pathlib import Path
@@ -10,6 +11,8 @@ from app.models import Model3D
 from app.thumbnails import generate_thumbnail, mesh_stats
 
 logger = logging.getLogger("modelhub.scanner")
+
+SCAN_BATCH_SIZE = 100
 
 
 def hash_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
@@ -102,6 +105,36 @@ def _upsert_path(session: Session, path: Path, rel_path: str, counters: dict) ->
     return model
 
 
+def _checkpoint_session(session: Session) -> None:
+    """Persist a scan batch and release ORM state before processing more files."""
+    session.commit()
+    session.expunge_all()
+    # Mesh parsing/rendering can leave large cyclic Python object graphs behind.
+    # Collect at the same bounded checkpoint so long scans do not accumulate them.
+    gc.collect()
+
+
+def _remove_missing_models(session: Session) -> None:
+    """Remove stale DB rows in bounded batches instead of loading the full table."""
+    last_id = 0
+    while True:
+        models = session.exec(
+            select(Model3D)
+            .where(Model3D.id > last_id)
+            .order_by(Model3D.id)
+            .limit(SCAN_BATCH_SIZE)
+        ).all()
+        if not models:
+            break
+
+        last_id = models[-1].id
+        for model in models:
+            if not (LIBRARY_PATH / model.path).exists():
+                session.delete(model)
+
+        _checkpoint_session(session)
+
+
 def scan_library(session: Session) -> dict:
     """Walk LIBRARY_PATH, add new files, update changed ones, flag duplicates."""
     counters = {"found": 0, "added": 0, "updated": 0, "duplicates": 0}
@@ -122,21 +155,18 @@ def scan_library(session: Session) -> dict:
         rel_path = str(path.relative_to(LIBRARY_PATH))
         _upsert_path(session, path, rel_path, counters)
 
-        if counters["found"] % 100 == 0:
+        if counters["found"] % SCAN_BATCH_SIZE == 0:
+            _checkpoint_session(session)
             logger.info(
                 "Library scan progress: %d models processed; current: %s",
                 counters["found"],
                 rel_path,
             )
 
-    session.commit()
+    # Persist the final partial batch (or a small library below SCAN_BATCH_SIZE).
+    _checkpoint_session(session)
 
-    # remove DB entries for files that no longer exist on disk
-    all_models = session.exec(select(Model3D)).all()
-    for m in all_models:
-        if not (LIBRARY_PATH / m.path).exists():
-            session.delete(m)
-    session.commit()
+    _remove_missing_models(session)
 
     logger.info("Library scan complete: %s", counters)
     return counters
