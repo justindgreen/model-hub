@@ -29,7 +29,7 @@ def list_models(
     tag: Optional[str] = None,
     extension: Optional[str] = None,
     duplicates_only: bool = False,
-    limit: int = Query(200, ge=1, le=500),
+    limit: int = Query(200, ge=1, le=5000),
     offset: int = Query(0, ge=0),
     session: Session = Depends(get_session),
 ):
