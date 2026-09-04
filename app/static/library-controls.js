@@ -14,6 +14,12 @@
     pager.innerHTML = `
       <button id="library-prev" type="button">Previous</button>
       <span id="library-page-info">0 models</span>
+      <label class="pagination-jump" for="library-page-jump">
+        Page
+        <input id="library-page-jump" type="number" min="1" value="1" inputmode="numeric" aria-label="Page number">
+        <span id="library-page-count">of 1</span>
+      </label>
+      <button id="library-page-go" type="button">Go</button>
       <button id="library-next" type="button">Next</button>`;
 
     const grid = document.querySelector('#grid');
@@ -26,7 +32,10 @@
     const prev = document.querySelector('#library-prev');
     const next = document.querySelector('#library-next');
     const info = document.querySelector('#library-page-info');
-    if (!prev || !next || !info) return;
+    const jump = document.querySelector('#library-page-jump');
+    const pageCountLabel = document.querySelector('#library-page-count');
+    const go = document.querySelector('#library-page-go');
+    if (!prev || !next || !info || !jump || !pageCountLabel || !go) return;
 
     const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
     const page = total === 0 ? 1 : Math.floor(offset / PAGE_SIZE) + 1;
@@ -35,9 +44,15 @@
 
     info.textContent = total === 0
       ? '0 models'
-      : `${first}-${last} of ${total} · Page ${page} of ${pageCount}`;
+      : `${first}-${last} of ${total}`;
     prev.disabled = offset <= 0;
     next.disabled = offset + PAGE_SIZE >= total;
+
+    jump.max = String(pageCount);
+    jump.value = String(page);
+    jump.disabled = total === 0;
+    pageCountLabel.textContent = `of ${pageCount}`;
+    go.disabled = total === 0;
   }
 
   function requestLibraryReload() {
@@ -46,6 +61,24 @@
     suppressReset = true;
     search.dispatchEvent(new Event('input', { bubbles: true }));
     suppressReset = false;
+  }
+
+  function jumpToPage() {
+    const jump = document.querySelector('#library-page-jump');
+    if (!jump || total === 0) return;
+
+    const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    const requested = Number.parseInt(jump.value, 10);
+    const page = Number.isFinite(requested)
+      ? Math.min(pageCount, Math.max(1, requested))
+      : 1;
+
+    jump.value = String(page);
+    const newOffset = (page - 1) * PAGE_SIZE;
+    if (newOffset === offset) return;
+
+    offset = newOffset;
+    requestLibraryReload();
   }
 
   const nativeFetch = window.fetch.bind(window);
@@ -108,6 +141,14 @@
     if (offset + PAGE_SIZE >= total) return;
     offset += PAGE_SIZE;
     requestLibraryReload();
+  });
+
+  document.querySelector('#library-page-go')?.addEventListener('click', jumpToPage);
+  document.querySelector('#library-page-jump')?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      jumpToPage();
+    }
   });
 
   // Register before app.js so a scan collision can be handled cleanly instead
