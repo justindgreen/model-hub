@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 
 from app.config import LIBRARY_PATH, SUPPORTED_EXTENSIONS, MESH_EXTENSIONS
 from app.models import Model3D
-from app.thumbnails import generate_thumbnail, mesh_stats
+from app.thumbnails import generate_thumbnail, load_mesh, mesh_stats
 
 logger = logging.getLogger("modelhub.scanner")
 
@@ -45,20 +45,30 @@ def _upsert_path(session: Session, path: Path, rel_path: str, counters: dict) ->
     thumb_path = None
 
     if ext in MESH_EXTENSIONS:
+        mesh = None
         try:
-            stats = mesh_stats(path)
-            geometry_hash = stats["geometry_hash"]
-            vcount = stats["vertex_count"]
-            fcount = stats["face_count"]
-            bbox = stats["bbox"]
-            volume_mm3 = stats["volume_mm3"]
-            is_watertight = stats["is_watertight"]
+            # Load once and reuse the same mesh for stats and thumbnail rendering.
+            mesh = load_mesh(path)
         except Exception as e:
-            logger.warning("Failed to read mesh stats for %s: %s", path, e)
-        try:
-            thumb_path = generate_thumbnail(path)
-        except Exception as e:
-            logger.warning("Thumbnail generation failed for %s: %s", path, e)
+            logger.warning("Failed to load mesh for %s: %s", path, e)
+        else:
+            try:
+                stats = mesh_stats(path, mesh=mesh)
+                geometry_hash = stats["geometry_hash"]
+                vcount = stats["vertex_count"]
+                fcount = stats["face_count"]
+                bbox = stats["bbox"]
+                volume_mm3 = stats["volume_mm3"]
+                is_watertight = stats["is_watertight"]
+            except Exception as e:
+                logger.warning("Failed to read mesh stats for %s: %s", path, e)
+            try:
+                thumb_path = generate_thumbnail(path, mesh=mesh)
+            except Exception as e:
+                logger.warning("Thumbnail generation failed for %s: %s", path, e)
+        finally:
+            # Do not keep a large Trimesh object alive beyond this file.
+            del mesh
 
     dup_of = None
     dup_match = session.exec(
