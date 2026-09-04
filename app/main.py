@@ -78,6 +78,8 @@ def _run_scan():
 
 
 async def _background_scan_loop():
+    from app.scanner import ScanAlreadyRunning
+
     while True:
         try:
             # scan_library performs blocking filesystem, hashing, mesh parsing,
@@ -85,6 +87,8 @@ async def _background_scan_loop():
             # Uvicorn can finish startup and continue servicing HTTP requests.
             result = await asyncio.to_thread(_run_scan)
             logger.info("Background scan: %s", result)
+        except ScanAlreadyRunning:
+            logger.info("Background scan skipped: library scan already in progress")
         except Exception:
             logger.exception("Background scan failed")
         await asyncio.sleep(SCAN_INTERVAL_SECONDS)
