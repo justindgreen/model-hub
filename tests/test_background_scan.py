@@ -74,3 +74,44 @@ def test_scan_checkpoints_every_batch(monkeypatch, tmp_path):
     # 100, 200, and the final partial batch.
     assert session.commits == 3
     assert session.expunges == 3
+
+
+def test_concurrent_scan_is_rejected(monkeypatch):
+    """Only one library scan may run at a time within the process."""
+    import app.scanner as scanner
+
+    scan_started = threading.Event()
+    release_scan = threading.Event()
+
+    def fake_scan_library(session):
+        scan_started.set()
+        release_scan.wait(timeout=2)
+        return {"found": 0, "added": 0, "updated": 0, "duplicates": 0}
+
+    monkeypatch.setattr(scanner, "_scan_library", fake_scan_library)
+
+    worker_error = []
+
+    def first_scan():
+        try:
+            scanner.scan_library(object())
+        except Exception as exc:
+            worker_error.append(exc)
+
+    worker = threading.Thread(target=first_scan)
+    worker.start()
+    assert scan_started.wait(timeout=1)
+    assert scanner.scan_is_running() is True
+
+    try:
+        try:
+            scanner.scan_library(object())
+            assert False, "second scan should have been rejected"
+        except scanner.ScanAlreadyRunning as exc:
+            assert "already in progress" in str(exc)
+    finally:
+        release_scan.set()
+        worker.join(timeout=2)
+
+    assert worker_error == []
+    assert scanner.scan_is_running() is False
