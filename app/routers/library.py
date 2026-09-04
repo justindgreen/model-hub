@@ -6,7 +6,7 @@ from typing import Optional
 from app.db import get_session
 from app.models import Model3D, Tag
 from app.config import LIBRARY_PATH, THUMB_DIR
-from app.scanner import scan_library, import_uploaded_file
+from app.scanner import ScanAlreadyRunning, scan_library, import_uploaded_file
 from app.ai.tagging import semantic_search
 from app.estimate import estimate_print
 
@@ -15,7 +15,10 @@ router = APIRouter(prefix="/api/library", tags=["library"])
 
 @router.post("/scan")
 def trigger_scan(session: Session = Depends(get_session)):
-    return scan_library(session)
+    try:
+        return scan_library(session)
+    except ScanAlreadyRunning as e:
+        raise HTTPException(status_code=409, detail=str(e))
 
 
 @router.get("/models")
@@ -52,7 +55,7 @@ async def import_file(
     license: Optional[str] = Form(None),
     session: Session = Depends(get_session),
 ):
-    """Receives a model file pushed from the Model Hub browser extension
+    """Receives a model file pushed in by the Model Hub browser extension
     (or any other client) and files it into the library."""
     content = await file.read()
     try:
