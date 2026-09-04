@@ -110,6 +110,8 @@ def scan_library(session: Session) -> dict:
         logger.warning("Library path %s does not exist", LIBRARY_PATH)
         return counters
 
+    logger.info("Library scan started: %s", LIBRARY_PATH)
+
     for path in LIBRARY_PATH.rglob("*"):
         if not path.is_file():
             continue
@@ -120,6 +122,13 @@ def scan_library(session: Session) -> dict:
         rel_path = str(path.relative_to(LIBRARY_PATH))
         _upsert_path(session, path, rel_path, counters)
 
+        if counters["found"] % 100 == 0:
+            logger.info(
+                "Library scan progress: %d models processed; current: %s",
+                counters["found"],
+                rel_path,
+            )
+
     session.commit()
 
     # remove DB entries for files that no longer exist on disk
@@ -129,6 +138,7 @@ def scan_library(session: Session) -> dict:
             session.delete(m)
     session.commit()
 
+    logger.info("Library scan complete: %s", counters)
     return counters
 
 
