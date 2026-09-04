@@ -1,6 +1,8 @@
 import asyncio
 import threading
 
+import pytest
+
 
 def test_run_scan_is_offloaded_from_event_loop(monkeypatch):
     """The background scanner must not execute blocking scan work on the event-loop thread."""
@@ -40,8 +42,8 @@ def test_run_scan_is_offloaded_from_event_loop(monkeypatch):
     asyncio.run(exercise())
 
 
-def test_scan_checkpoints_every_batch(monkeypatch, tmp_path):
-    """Large scans should persist and release session state every configured batch."""
+def test_scan_commits_each_file_and_checkpoints_memory_in_batches(monkeypatch, tmp_path):
+    """DB writes should be short per-file transactions while memory cleanup stays batched."""
     import app.scanner as scanner
 
     class FakeSession:
@@ -71,9 +73,43 @@ def test_scan_checkpoints_every_batch(monkeypatch, tmp_path):
     result = scanner.scan_library(session)
 
     assert result["found"] == 205
-    # 100, 200, and the final partial batch.
-    assert session.commits == 3
+    # Each model is committed immediately so SQLite's writer lock is released
+    # before the scanner begins expensive work on the next model.
+    assert session.commits == 205
+    # ORM/GC cleanup remains bounded at 100, 200, and the final partial batch.
     assert session.expunges == 3
+
+
+def test_upsert_releases_lookup_transaction_before_expensive_processing(monkeypatch, tmp_path):
+    """Hashing/mesh work must not run while the initial SQLite read transaction is open."""
+    import app.scanner as scanner
+
+    class EmptyResult:
+        def first(self):
+            return None
+
+    class FakeSession:
+        def __init__(self):
+            self.rolled_back = False
+
+        def exec(self, statement):
+            return EmptyResult()
+
+        def rollback(self):
+            self.rolled_back = True
+
+    path = tmp_path / "model.stl"
+    path.write_bytes(b"solid test\nendsolid test\n")
+    session = FakeSession()
+
+    def fake_hash_file(file_path, chunk_size=1024 * 1024):
+        assert session.rolled_back is True
+        raise RuntimeError("stop after transaction-boundary assertion")
+
+    monkeypatch.setattr(scanner, "hash_file", fake_hash_file)
+
+    with pytest.raises(RuntimeError, match="transaction-boundary"):
+        scanner._upsert_path(session, path, path.name, {})
 
 
 def test_concurrent_scan_is_rejected(monkeypatch):
