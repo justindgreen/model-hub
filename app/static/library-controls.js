@@ -82,57 +82,57 @@
     return response;
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
-    ensurePager();
-    updatePager();
+  // This script is loaded at the end of <body>, immediately before app.js, so
+  // the Library DOM already exists and these handlers register first.
+  ensurePager();
+  updatePager();
 
-    const search = document.querySelector('#search-box');
-    const dupOnly = document.querySelector('#dup-only');
-    const scanButton = document.querySelector('#scan-btn');
+  const search = document.querySelector('#search-box');
+  const dupOnly = document.querySelector('#dup-only');
+  const scanButton = document.querySelector('#scan-btn');
 
-    search?.addEventListener('input', () => {
-      if (!suppressReset) offset = 0;
-    });
-    dupOnly?.addEventListener('change', () => {
-      offset = 0;
-    });
+  search?.addEventListener('input', () => {
+    if (!suppressReset) offset = 0;
+  });
+  dupOnly?.addEventListener('change', () => {
+    offset = 0;
+  });
 
-    document.querySelector('#library-prev')?.addEventListener('click', () => {
-      if (offset <= 0) return;
-      offset = Math.max(0, offset - PAGE_SIZE);
-      requestLibraryReload();
-    });
+  document.querySelector('#library-prev')?.addEventListener('click', () => {
+    if (offset <= 0) return;
+    offset = Math.max(0, offset - PAGE_SIZE);
+    requestLibraryReload();
+  });
 
-    document.querySelector('#library-next')?.addEventListener('click', () => {
-      if (offset + PAGE_SIZE >= total) return;
-      offset += PAGE_SIZE;
-      requestLibraryReload();
-    });
+  document.querySelector('#library-next')?.addEventListener('click', () => {
+    if (offset + PAGE_SIZE >= total) return;
+    offset += PAGE_SIZE;
+    requestLibraryReload();
+  });
 
-    // Register before app.js so a scan collision can be handled cleanly instead
-    // of letting the legacy handler display undefined counters for a 409 response.
-    scanButton?.addEventListener('click', async (event) => {
-      event.stopImmediatePropagation();
-      scanButton.textContent = 'Scanning...';
-      scanButton.disabled = true;
-      try {
-        const response = await nativeFetch('/api/library/scan', { method: 'POST' });
-        const result = await response.json().catch(() => ({}));
-        if (response.status === 409) {
-          alert(result.detail || 'A library scan is already in progress.');
-          return;
-        }
-        if (!response.ok) {
-          alert(result.detail || 'Library scan failed.');
-          return;
-        }
-        alert(`Scan complete: ${result.found} found, ${result.added} added, ${result.updated} updated, ${result.duplicates} duplicates.`);
-        offset = 0;
-        requestLibraryReload();
-      } finally {
-        scanButton.textContent = 'Rescan Library';
-        scanButton.disabled = false;
+  // Register before app.js so a scan collision can be handled cleanly instead
+  // of letting the legacy handler display undefined counters for a 409 response.
+  scanButton?.addEventListener('click', async (event) => {
+    event.stopImmediatePropagation();
+    scanButton.textContent = 'Scanning...';
+    scanButton.disabled = true;
+    try {
+      const response = await nativeFetch('/api/library/scan', { method: 'POST' });
+      const result = await response.json().catch(() => ({}));
+      if (response.status === 409) {
+        alert(result.detail || 'A library scan is already in progress.');
+        return;
       }
-    });
+      if (!response.ok) {
+        alert(result.detail || 'Library scan failed.');
+        return;
+      }
+      alert(`Scan complete: ${result.found} found, ${result.added} added, ${result.updated} updated, ${result.duplicates} duplicates.`);
+      offset = 0;
+      requestLibraryReload();
+    } finally {
+      scanButton.textContent = 'Rescan Library';
+      scanButton.disabled = false;
+    }
   });
 })();
