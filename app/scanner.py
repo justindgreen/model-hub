@@ -1,6 +1,7 @@
 import gc
 import hashlib
 import logging
+import threading
 from pathlib import Path
 from datetime import datetime
 
@@ -13,6 +14,16 @@ from app.thumbnails import generate_thumbnail, load_mesh, mesh_stats
 logger = logging.getLogger("modelhub.scanner")
 
 SCAN_BATCH_SIZE = 100
+_scan_lock = threading.Lock()
+
+
+class ScanAlreadyRunning(RuntimeError):
+    """Raised when another library scan already owns the process-wide scan lock."""
+
+
+def scan_is_running() -> bool:
+    """Return whether a library scan currently owns the process-wide scan lock."""
+    return _scan_lock.locked()
 
 
 def hash_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
@@ -146,6 +157,16 @@ def _remove_missing_models(session: Session) -> None:
 
 
 def scan_library(session: Session) -> dict:
+    """Run one library scan, rejecting concurrent scan attempts."""
+    if not _scan_lock.acquire(blocking=False):
+        raise ScanAlreadyRunning("Library scan already in progress")
+    try:
+        return _scan_library(session)
+    finally:
+        _scan_lock.release()
+
+
+def _scan_library(session: Session) -> dict:
     """Walk LIBRARY_PATH, add new files, update changed ones, flag duplicates."""
     counters = {"found": 0, "added": 0, "updated": 0, "duplicates": 0}
 
